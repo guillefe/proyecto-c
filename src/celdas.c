@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../incl/celdas.h"
-#include "../incl/comandos.h"
+#include "celdas.h"
+#include "comandos.h"
 
 // AQUI CREAMOS LA MEMORIA DINAMICA
 celdas *puntero = NULL;

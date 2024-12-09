@@ -1,21 +1,28 @@
+# Variables
 CC = gcc
-CFLAGS = -g
+CFLAGS = -Wall -Iinclude
+SRC_DIR = src
+OBJ_DIR = obj
+BIN_DIR = bin
 
-OBJECT = obj
-SRC = src
-MAIN = main
+SOURCES = $(wildcard $(SRC_DIR)/*.c)
+OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
+TARGET = $(BIN_DIR)/main
 
-$(MAIN): $(OBJECT)/main.o $(OBJECT)/celdas.o $(OBJECT)/comandos.o
-	$(CC) $(OBJECT)/main.o $(OBJECT)/celdas.o $(OBJECT)/comandos.o -o $(TARGET)
+# Rules
+all: $(TARGET)
 
-$(OBJECT)/main.o: $(SRC)/main.c incl/celdas.h incl/comandos.h
-	$(CC) $(CFLAGS) -c $(SRC)/main.c -o $(OBJECT)/main.o
+$(TARGET): $(OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
 
-$(OBJECT)/celdas.o: $(SRC)/celdas.c incl/celdas.h
-	$(CC) $(CFLAGS) -c $(SRC)/celdas.c -o $(OBJECT)/celdas.o
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJECT)/comandos.o: $(SRC)/comandos.c incl/comandos.h
-	$(CC) $(CFLAGS) -c $(SRC)/comandos.c -o $(OBJECT)/comandos.o
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
 
 clean:
-	rm -f $(OBJECT)/* $(MAIN)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
+.PHONY: all clean

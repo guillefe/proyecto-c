@@ -1,6 +1,18 @@
 #define CELDAS_H
 #define CELDAS_H
 
+typedef enum e_mode
+{
+    auto = 0,
+    ad_hoc,
+    managed,
+    master,
+    repeater,
+    secondary,
+    monitor,
+    unknown
+} t_mode;
+
 typedef struct {
     int id_cell;
     char address[18];
