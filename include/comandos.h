@@ -7,3 +7,4 @@ void wificollector_collect();
 void wificollector_display();
 void wificollector_display_all();
 void wificollector_sort();
+#endif
