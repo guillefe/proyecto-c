@@ -1,8 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "celdas.h"
 #include "comandos.h"
+
+#define CELL_STRING "Cell"
+#define ADDRESS_STRING "Address"
+#define ESSID_STRING "ESSID"
+#define MODE_STRING "Mode"
+#define CHANNEL_SRTING "Channel"
+#define ENCRYPTION_STRING "Encryption key"
+#define QUALITY_STRING "Quality"
+#define FREQUENCY_STRING "Frequency"
+#define SIGNAL_STRING "Signal level"
 
 /**
  * Crea un nuevo nodo de tipo t_punto_acceso.
@@ -100,4 +111,62 @@ void liberar_un_nodo(t_punto_acceso **nodo_cabeza, t_punto_acceso *nodo_eliminar
 	free(nodo_eliminar);
 }
 
-unsigned char 
+
+// Función para validar una dirección MAC
+int is_valid_mac(const char *mac) {
+    // Verificar la longitud: debe ser exactamente 17 caracteres
+    if (strlen(mac) != 17) {
+        return EXIT_FAILURE;
+    }
+
+    // Verificar cada carácter
+    for (int i = 0; i < 17; i++) {
+        if (i % 3 == 2) {
+            // Cada tercer carácter debe ser ':' o '-'
+            if (mac[i] != ':' && mac[i] != '-') {
+                return EXIT_FAILURE;
+            }
+        } else {
+            // Los otros caracteres deben ser dígitos hexadecimales
+            if (!isxdigit(mac[i])) {
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int rellenar_nodo(t_punto_acceso *nodo, const char *linea)
+{
+	int rtrn = EXIT_FAILURE;
+	char *temporal = NULL;
+
+	if (nodo == NULL || linea == NULL)
+		return (EXIT_FAILURE);
+	
+	if (strncmp(linea, CELL_STRING, strlen(CELL_STRING)) == 0)
+	{
+		// Linea Cell N
+		temporal = strchr(linea, ' ');
+		if (temporal != NULL)
+		{
+			nodo->id_cell = atoi(temporal);
+			if (nodo->id_cell > 0 && nodo->id_cell <= 21)
+				rtrn = EXIT_SUCCESS;
+		}
+	}
+	else if (strncmp (linea, ADDRESS_STRING, strlen(ADDRESS_STRING)) == 0)
+	{
+		// Linea Address
+		temporal = strchr(linea, ' ');
+		while (isspace((unsigned char)*temporal))
+			temporal++;
+		if (temporal != NULL)
+		{
+
+		}
+	}
+
+	return rtrn;
+}

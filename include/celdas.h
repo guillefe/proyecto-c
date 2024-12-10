@@ -3,6 +3,7 @@
 
 #define TRUE 1
 #define FALSE 0
+#define MAX_VALUE_LENGTH 20
 
 typedef enum e_mode
 {
@@ -30,8 +31,8 @@ typedef struct s_quality
 
 typedef struct s_punto_acceso {
     int 					id_cell;
-    char 					mac_address[20];
-    char 					essid[20];
+    char 					mac_address[MAX_VALUE_LENGTH];
+    char 					essid[MAX_VALUE_LENGTH];
     e_mode					mode;
     int 					channel;
     e_encryptation 			encryptation;
