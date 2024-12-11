@@ -8,68 +8,60 @@
 
 
 
-int wificollector_quit(){
+int wificollector_quit()
+{
+    char respuesta;
+    int quit = FALSE;
 
-    printf("Está seguro que desea salir del programa? [s/N]:\n");
-    char respuesta = getchar();
+    while (1)
+    {
+        printf("Está seguro que desea salir del programa? [s/N]:\n");
+        respuesta = getchar();
 
-    if (respuesta == 's' || respuesta == 'S'){
-        return 0;
-    } else if (respuesta == 'n' || respuesta == 'N'){
-        mostrar_menu();
-    }else {
-        printf("El caracter introducido no es valido.\n");
-        wificollector_quit();
+        if (respuesta == 's')
+        {
+            quit = TRUE;
+            break;
+        }
+        else if (respuesta == 'N')
+        {
+            quit = FALSE;
+            break;
+        }
+        else
+            printf("El caracter introducido no es valido.\n");
     }
+
+    return(quit);
 }
 
 
-void wificollector_collect(){
-    char *opcion_elegida;
-    int posicion_celda;
-    int n=0
+void wificollector_collect()
+{  
+    int añadir_nodo = TRUE;
+    int opcion;
+    char entrada[MAX_VALUE_LENGTH];
+    char archivo_info_cell[MAX_VALUE_LENGTH];
 
-    printf("¿Que celda quiere recolectar? (1-21): \n");
-        scanf("%d", &posicion_celda);
-        opcion_elegida = abrir_archivo_texto(posicion_celda);
-        FILE *puntero = fopen(opcion_elegida, "r");
-        free(opcion_elegida);
-
-        int id_cell_aux;
-        char address_aux[18];
-        char essid_aux[28];
-        char mode_aux[16];
-        int channel_aux;
-        char encryptation_key_aux[5];
-        int quality_aux[28];
-        float frequency_aux;
-        int signal_level_aux;
-
-        while (fscanf(puntero, "Cell %d\n", &id_cell_aux) == 1){
-
-            fscanf(puntero, "Address: %17d\n", address_aux);
-            fscanf(puntero, "ESSID: %27[^\n]\n", essid_aux);
-            fscanf(puntero, "Mode: %15s\n", mode_aux);
-            fscanf(puntero, "Channel: %d\n", channel_aux);
-            fscanf(puntero, "Encryptation key: %4c\n", encyptation_key_aux);
-            fscanf(puntero, "Quality= %27d\n", quality_aux);
-            fscanf(puntero, "Frequency: %f\n", frecuency_aux);
-            fscanf(puntero, "Signal level: %d\n", signal_level_aux);
-
-            asignar_en_celda(id_cell_aux, address_aux, essid_aux, mode_aux, channel_aux, encryption_key_aux, quality_aux, frecuency_aux, signal_level_aux);
-
+    while (añadir_nodo)
+    {
+        while (TRUE)
+        {
+            printf("¿Qué celda quiere recolectar? (1-21): ");
+            if (fgets(entrada, sizeof(entrada), stdin) == NULL)
+            {
+                printf("\n");
+                printf("Error al leer la entrada. Intentelo de nuevo\n");
+                continue;
+            }
+            printf("\n");
+            opcion = atoi(entrada);
+            if ( opcion > 0 || opcion <= 21 )
+                break;
+            else
+                printf("Error, opcion invalida\n");
         }
-
-    while(n=1){
-    printf("¿Desea a~nadir otro punto de acceso? [s/N]: \n");
-        scanf("%c", &opcion_elegida);
-        if (opcion_elegida = 's' || opcion_elegida = 'S'){
-            wificollector_collect();
-        } else if (opcion_elegida = 'n' || opcion_elegida = 'N'){
-            mostrar_menu();
-        } else (
-            printf("El caracter no es valido\n");
-        )
+        snprintf(archivo_info_cell, MAX_VALUE_LENGTH, "info_cell_%d.txt", opcion);
     }
 
 }

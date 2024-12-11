@@ -111,36 +111,11 @@ void liberar_un_nodo(t_punto_acceso **nodo_cabeza, t_punto_acceso *nodo_eliminar
 	free(nodo_eliminar);
 }
 
-
-// Función para validar una dirección MAC
-int is_valid_mac(const char *mac) {
-    // Verificar la longitud: debe ser exactamente 17 caracteres
-    if (strlen(mac) != 17) {
-        return EXIT_FAILURE;
-    }
-
-    // Verificar cada carácter
-    for (int i = 0; i < 17; i++) {
-        if (i % 3 == 2) {
-            // Cada tercer carácter debe ser ':' o '-'
-            if (mac[i] != ':' && mac[i] != '-') {
-                return EXIT_FAILURE;
-            }
-        } else {
-            // Los otros caracteres deben ser dígitos hexadecimales
-            if (!isxdigit(mac[i])) {
-                return EXIT_FAILURE;
-            }
-        }
-    }
-
-    return EXIT_SUCCESS;
-}
-
 int rellenar_nodo(t_punto_acceso *nodo, const char *linea)
 {
-	int rtrn = EXIT_FAILURE;
 	char *temporal = NULL;
+	int	clave_longitud = 0;
+	int rtrn = EXIT_SUCCESS;
 
 	if (nodo == NULL || linea == NULL)
 		return (EXIT_FAILURE);
@@ -148,25 +123,63 @@ int rellenar_nodo(t_punto_acceso *nodo, const char *linea)
 	if (strncmp(linea, CELL_STRING, strlen(CELL_STRING)) == 0)
 	{
 		// Linea Cell N
-		temporal = strchr(linea, ' ');
-		if (temporal != NULL)
-		{
-			nodo->id_cell = atoi(temporal);
-			if (nodo->id_cell > 0 && nodo->id_cell <= 21)
-				rtrn = EXIT_SUCCESS;
-		}
+		temporal = linea + strlen(CELL_STRING) - 1;
+		snprintf(nodo->id_cell, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 	else if (strncmp (linea, ADDRESS_STRING, strlen(ADDRESS_STRING)) == 0)
 	{
 		// Linea Address
-		temporal = strchr(linea, ' ');
-		while (isspace((unsigned char)*temporal))
-			temporal++;
-		if (temporal != NULL)
-		{
-
-		}
+		temporal = linea + strlen(ADDRESS_STRING) - 1;
+		snprintf(nodo->mac_address, MAX_VALUE_LENGTH, "%s", temporal);
 	}
-
+	else if (strncmp (linea, ESSID_STRING, strlen(ESSID_STRING)) == 0)
+	{
+		// Linea ESSID
+		temporal = linea + strlen(ESSID_STRING) - 1;
+		snprintf(nodo->essid, MAX_VALUE_LENGTH, "%s", temporal);
+	}
+		else if (strncmp (linea, MODE_STRING, strlen(MODE_STRING)) == 0)
+	{
+		// Linea Mode
+		temporal = linea + strlen(MODE_STRING) - 1;
+		snprintf(nodo->mode, MAX_VALUE_LENGTH, "%s", temporal);
+	}
+		else if (strncmp (linea, CHANNEL_SRTING, strlen(CHANNEL_SRTING)) == 0)
+	{
+		// Linea Channel
+		temporal = linea + strlen(CHANNEL_SRTING) - 1;
+		snprintf(nodo->channel, MAX_VALUE_LENGTH, "%s", temporal);
+	}
+		else if (strncmp (linea, ENCRYPTION_STRING, strlen(ENCRYPTION_STRING)) == 0)
+	{
+		// Linea Encryption
+		temporal = linea + strlen(ENCRYPTION_STRING) - 1;
+		snprintf(nodo->encryptation, MAX_VALUE_LENGTH, "%s", temporal);
+	}
+		else if (strncmp (linea, QUALITY_STRING, strlen(QUALITY_STRING)) == 0)
+	{
+		// Linea Quality
+		temporal = linea + strlen(QUALITY_STRING) - 1;
+		snprintf(nodo->quality, MAX_VALUE_LENGTH, "%s", temporal);
+	}
+		else if (strncmp (linea, FREQUENCY_STRING, strlen(FREQUENCY_STRING)) == 0)
+	{
+		// Linea Frequency
+		temporal = linea + strlen(FREQUENCY_STRING) - 1;
+		snprintf(nodo->frequency, MAX_VALUE_LENGTH, "%s", temporal);
+	}
+		else if (strncmp (linea, SIGNAL_STRING, strlen(SIGNAL_STRING)) == 0)
+	{
+		// Linea Signal
+		temporal = linea + strlen(SIGNAL_STRING) - 1;
+		snprintf(nodo->signal_level, MAX_VALUE_LENGTH, "%s", temporal);
+	}
+	else
+		rtrn = EXIT_FAILURE;
 	return rtrn;
+}
+
+void	vaciar_nodo(t_punto_acceso *nodo)
+{
+	memset(nodo, 0, sizeof(t_punto_acceso));
 }

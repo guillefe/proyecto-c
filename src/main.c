@@ -42,15 +42,18 @@ int obtener_opcion(void)
     return opcion;
 }
 
-int menu (){
+void menu (){
     int opcion_de_menu;
+    int quit = FALSE;
+    t_punto_acceso *lista = NULL;
 
-    do{
+    while (quit == FALSE)
+    {
         mostrar_menu();
         opcion_de_menu = obtener_opcion();
         switch (opcion_de_menu) {
             case 1:
-                wificollector_quit();
+                quit = wificollector_quit();
                 break;
             case 2:
                 wificollector_collect();
@@ -68,8 +71,7 @@ int menu (){
                 printf("Este metodo todavia no esta implementado.\n");
             printf("Seleccione una opcion entre: [1],[2],[9],[10]\n");
         }
-
-    }while(1);
+    }
 }
 
 int main(int argc, char* argv[]){

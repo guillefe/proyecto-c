@@ -5,40 +5,16 @@
 #define FALSE 0
 #define MAX_VALUE_LENGTH 20
 
-typedef enum e_mode
-{
-	mode_auto = 0,
-	mode_ad_hoc,
-	mode_managed,
-	mode_master,
-	mode_repeater,
-	mode_secondary,
-	mode_monitor,
-	mode_unknown
-} e_mode;
-
-typedef enum e_encryptation
-{
-	encryptation_on = 0,
-	encryptation_off
-} e_encryptation;
-
-typedef struct s_quality
-{
-	int	current_level;
-	int	max_level;
-} t_quality;
-
 typedef struct s_punto_acceso {
-    int 					id_cell;
+    char 					id_cell[MAX_VALUE_LENGTH];
     char 					mac_address[MAX_VALUE_LENGTH];
     char 					essid[MAX_VALUE_LENGTH];
-    e_mode					mode;
-    int 					channel;
-    e_encryptation 			encryptation;
-    t_quality				cuality;
-    float 					frequency;
-    int 					signal_level;
+    char					mode[MAX_VALUE_LENGTH];
+    char  		 			channel[MAX_VALUE_LENGTH];
+    char  		 			encryptation[MAX_VALUE_LENGTH];
+    char  					quality[MAX_VALUE_LENGTH];
+    char  		 			frequency[MAX_VALUE_LENGTH];
+    char  		 			signal_level[MAX_VALUE_LENGTH];
 	struct s_punto_acceso 	*next;
 	struct s_punto_acceso 	*prev;
 } t_punto_acceso;
