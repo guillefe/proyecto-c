@@ -192,3 +192,22 @@ int comprobar_nodo(t_punto_acceso **lista, t_punto_acceso *nodo, int cell_file)
 
 	return EXIT_SUCCESS;
 }
+
+int	numero_nodos(t_punto_acceso **lista)
+{
+	t_punto_acceso *nodo_actual;
+	int nodos = 0;
+
+	if (*lista == NULL)
+		return 0;
+	
+	nodo_actual = *lista;
+
+	while (nodo_actual)
+	{
+		nodos++;
+		nodo_actual = nodo_actual->next;
+	}
+
+	return nodos;
+}

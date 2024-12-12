@@ -33,4 +33,5 @@ void liberar_un_nodo(t_punto_acceso **nodo_cabeza, t_punto_acceso *nodo_eliminar
 int rellenar_nodo(t_punto_acceso *nodo, const char *linea);
 void	vaciar_nodo(t_punto_acceso *nodo);
 int comprobar_nodo(t_punto_acceso **lista, t_punto_acceso *nodo, int cell_file);
+int	numero_nodos(t_punto_acceso **lista);
 #endif

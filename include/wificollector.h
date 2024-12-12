@@ -9,6 +9,6 @@ int wificollector_quit();
 void wificollector_collect(t_punto_acceso **lista);
 void wificollector_display(t_punto_acceso **lista);
 void wificollector_display_all(t_punto_acceso **lista);
-void wificollector_sort(t_punto_acceso **lista);
+int wificollector_sort(t_punto_acceso **lista);
 
 #endif

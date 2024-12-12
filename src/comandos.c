@@ -40,19 +40,50 @@ char *trim(char *str, const char *characters)
     return str;
 }
 
-void	fill_list(t_punto_acceso **lista, const char *info_cell_file)
+int	fill_list(t_punto_acceso **lista, const char *info_cell_file)
 {
 	FILE *file = NULL;
+    t_punto_acceso *nodo = NULL;
+    char buffer[1024];
+    int rtrn;
 
 	if (info_cell_file == NULL)
-		return ;
+		return EXIT_FAILURE;
 	
 	if (access(info_cell_file, F_OK) != 0)
-		return ;
+		return EXIT_FAILURE;
 	
 	file = fopen(info_cell_file, "r")
 	if (file == NULL)
-		return ;
+		return EXIT_FAILURE;
+
+    while (fgets(buffer, sizeof(buffer), file) != NULL)
+    {
+        if (strncmp(buffer, "Cell", 4) == 0)
+        {
+            if (nodo != NULL)
+            {
+                rtrn = comprobar_nodo(lista, nodo);
+                if (rtrn == EXIT_FAILURE)
+                    vaciar_nodo(nodo);
+            }
+            else
+                agregar_nodo_fin_lista(lista, nodo);
+            nodo = nuevo_nodo();
+        }
+        if (nodo != NULL)
+        {
+            rtrn = rellenar_nodo(nodo, buffer);
+            if (rtrn == EXIT_FAILURE)
+                vaciar_nodo(nodo);
+        }
+
+    }
+    
+    if (*lista == NULL)
+        return EXIT_FAILURE;
+    
+    return EXIT_SUCCESS;
 }
 
 /**************************/
@@ -88,6 +119,7 @@ int wificollector_quit()
 void wificollector_collect(t_punto_acceso **lista)
 {  
     int añadir_nodo = TRUE;
+    int rtrn;
     int opcion;
 	char opcion_char;
     char entrada[MAX_VALUE_LENGTH];
@@ -120,7 +152,7 @@ void wificollector_collect(t_punto_acceso **lista)
         snprintf(archivo_info_cell, MAX_VALUE_LENGTH, "info_cell_%d.txt", opcion);
 
 		// Se rellena la lista con la informacion del archivo
-		fill_list(lista, archivo_info_cell);
+		rtrn = fill_list(lista, archivo_info_cell);
 
 		// Pregunta si se quiere cargar otro punto de acceso
 		while (TRUE)
@@ -140,71 +172,29 @@ void wificollector_collect(t_punto_acceso **lista)
 			else
 				printf("Error al leer la entrada. Intentelo de nuevo\n");
 		}
-    
 	}
+}
+
+void wificollector_display(t_punto_acceso **lista)
+{
 
 }
 
-void wificollector_display(t_punto_acceso **lista){
-    int celda_leer;
+void wificollector_display_all(t_punto_acceso **lista)
+{
 
-    printf("Indique el numero de la celda de la que desea conocer su informacion (1 - 21): \n");
-    scanf("%d", &celda_leer);
-
-    if (celda_leer > pos || celda_leer < 1){
-        printf("La celda que ha seleccionado esta vacia. \n");
-    } else{
-        printf(celda_leer, celdas.id_cell[celda_leer - 1]);
-    }
 }
 
-void wificollector_display_all(t_punto_acceso **lista){
-
-   int obtener_valor_quality(const char *quality_str) {
-    int valor = 0;
-    sscanf(quality_str, "%d", &valor);
-    return valor;
-}
-
-// Función para intercambiar dos elementos del array
-void swap(celdas *a, celdas *b) {
-    celdas temp = *a;
-    *a = *b;
-    *b = temp;
-}
 
 // Método para ordenar las celdas por calidad en orden decreciente
-void wificollector_sort(t_punto_acceso **lista) {
-    if (pos <= 1) {
-        printf("No hay suficientes celdas para ordenar.\n");
-        return;
-    }
+int wificollector_sort(t_punto_acceso **lista)
+{
+    int cuenta_nodos = 0;
+    char *mac_list = NULL;
 
-    // Bubble Sort
-    for (int i = 0; i < pos - 1; i++) {
-        for (int j = 0; j < pos - i - 1; j++) {
-            int quality_j = obtener_valor_quality(puntero[j].quality);
-            int quality_j1 = obtener_valor_quality(puntero[j + 1].quality);
-
-            if (quality_j < quality_j1) {
-                swap(&puntero[j], &puntero[j + 1]);
-            }
-        }
-    }
-
-    // Imprimir las celdas ordenadas
-    printf("Celdas ordenadas por calidad (descendente):\n");
-    for (int i = 0; i < pos; i++) {
-        printf("Celda ID: %d\n", puntero[i].id_cell);
-        printf("  Address: %s\n", puntero[i].address);
-        printf("  ESSID: %s\n", puntero[i].essid);
-        printf("  Mode: %s\n", puntero[i].mode);
-        printf("  Channel: %d\n", puntero[i].Channel);
-        printf("  encryption key: %s\n", puntero[i].encryption_key);
-        printf("  Quality: %s\n", puntero[i].quality);
-        printf("  Frequency: %.2f\n", puntero[i].frequency);
-        printf("  Signal level: %d\n\n", puntero[i].signal_level);
-    }
+    if (lista == NULL || *lista == NULL)
+        return ;
+    
+    cuenta_nodos = numero_nodos(lista);
+    mac_list = calloc(cuenta_nodos, 17 * sizeof(char *))
 }
-
-    }
