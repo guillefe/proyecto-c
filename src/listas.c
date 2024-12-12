@@ -1,19 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "celdas.h"
-#include "comandos.h"
-
-#define CELL_STRING "Cell"
-#define ADDRESS_STRING "Address"
-#define ESSID_STRING "ESSID"
-#define MODE_STRING "Mode"
-#define CHANNEL_SRTING "Channel"
-#define ENCRYPTION_STRING "Encryption key"
-#define QUALITY_STRING "Quality"
-#define FREQUENCY_STRING "Frequency"
-#define SIGNAL_STRING "Signal level"
 
 /**
  * Crea un nuevo nodo de tipo t_punto_acceso.
@@ -119,60 +104,53 @@ int rellenar_nodo(t_punto_acceso *nodo, const char *linea)
 
 	if (nodo == NULL || linea == NULL)
 		return (EXIT_FAILURE);
+
+	temporal = linea;
 	
 	if (strncmp(linea, CELL_STRING, strlen(CELL_STRING)) == 0)
 	{
 		// Linea Cell N
-		temporal = linea + strlen(CELL_STRING) - 1;
-		snprintf(nodo->id_cell, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->id_cell, MAX_VALUE_LENGTH, "%s", temporal + strlen(CELL_STRING) - 1);
 	}
 	else if (strncmp (linea, ADDRESS_STRING, strlen(ADDRESS_STRING)) == 0)
 	{
 		// Linea Address
-		temporal = linea + strlen(ADDRESS_STRING) - 1;
-		snprintf(nodo->mac_address, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->mac_address, MAX_VALUE_LENGTH, "%s", temporal + strlen(ADDRESS_STRING) - 1);
 	}
 	else if (strncmp (linea, ESSID_STRING, strlen(ESSID_STRING)) == 0)
 	{
 		// Linea ESSID
-		temporal = linea + strlen(ESSID_STRING) - 1;
-		snprintf(nodo->essid, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->essid, MAX_VALUE_LENGTH, "%s", temporal + strlen(ESSID_STRING) - 1);
 	}
 		else if (strncmp (linea, MODE_STRING, strlen(MODE_STRING)) == 0)
 	{
 		// Linea Mode
-		temporal = linea + strlen(MODE_STRING) - 1;
-		snprintf(nodo->mode, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->mode, MAX_VALUE_LENGTH, "%s", temporal + strlen(MODE_STRING) - 1);
 	}
 		else if (strncmp (linea, CHANNEL_SRTING, strlen(CHANNEL_SRTING)) == 0)
 	{
 		// Linea Channel
-		temporal = linea + strlen(CHANNEL_SRTING) - 1;
-		snprintf(nodo->channel, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->channel, MAX_VALUE_LENGTH, "%s", temporal + strlen(CHANNEL_SRTING) - 1);
 	}
 		else if (strncmp (linea, ENCRYPTION_STRING, strlen(ENCRYPTION_STRING)) == 0)
 	{
 		// Linea Encryption
-		temporal = linea + strlen(ENCRYPTION_STRING) - 1;
-		snprintf(nodo->encryptation, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->encryption, MAX_VALUE_LENGTH, "%s", temporal + strlen(ENCRYPTION_STRING) - 1);
 	}
 		else if (strncmp (linea, QUALITY_STRING, strlen(QUALITY_STRING)) == 0)
 	{
 		// Linea Quality
-		temporal = linea + strlen(QUALITY_STRING) - 1;
-		snprintf(nodo->quality, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->quality, MAX_VALUE_LENGTH, "%s", temporal + strlen(QUALITY_STRING) - 1);
 	}
 		else if (strncmp (linea, FREQUENCY_STRING, strlen(FREQUENCY_STRING)) == 0)
 	{
 		// Linea Frequency
-		temporal = linea + strlen(FREQUENCY_STRING) - 1;
-		snprintf(nodo->frequency, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->frequency, MAX_VALUE_LENGTH, "%s", temporal + strlen(FREQUENCY_STRING) - 1);
 	}
 		else if (strncmp (linea, SIGNAL_STRING, strlen(SIGNAL_STRING)) == 0)
 	{
 		// Linea Signal
-		temporal = linea + strlen(SIGNAL_STRING) - 1;
-		snprintf(nodo->signal_level, MAX_VALUE_LENGTH, "%s", temporal);
+		snprintf(nodo->signal_level, MAX_VALUE_LENGTH, "%s", temporal + strlen(SIGNAL_STRING) - 1);
 	}
 	else
 		rtrn = EXIT_FAILURE;
@@ -182,4 +160,35 @@ int rellenar_nodo(t_punto_acceso *nodo, const char *linea)
 void	vaciar_nodo(t_punto_acceso *nodo)
 {
 	memset(nodo, 0, sizeof(t_punto_acceso));
+}
+
+int comprobar_nodo(t_punto_acceso **lista, t_punto_acceso *nodo, int cell_file)
+{
+	t_punto_acceso *nodo_actual = NULL;
+	if (nodo == NULL)
+		return EXIT_FAILURE;
+
+	nodo_actual = *lista;
+
+	if (check_cell(nodo->id_cell, cell_file) == EXIT_FAILURE ||
+		check_address(nodo->mac_address) == EXIT_FAILURE ||
+		check_essid(nodo->essid) == EXIT_FAILURE ||
+		check_mode(nodo->mode) == EXIT_FAILURE ||
+		check_channel(nodo->channel) == EXIT_FAILURE ||
+		check_encryption(nodo->encryption) == EXIT_FAILURE ||
+		check_quality(nodo->quality) == EXIT_FAILURE ||
+		check_frequency(nodo->frequency) == EXIT_FAILURE ||
+		check_signal(nodo->signal_level) == EXIT_FAILURE)
+	{
+		return EXIT_FAILURE;
+	}
+
+	while (nodo_actual)
+	{
+		if (strcmp(nodo->mac_address, nodo_actual->mac_address) == 0)
+			return EXIT_FAILURE;
+		nodo_actual = nodo_actual->next;
+	}
+
+	return EXIT_SUCCESS;
 }
