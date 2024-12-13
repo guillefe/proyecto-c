@@ -4,42 +4,6 @@
 /* Funciones auxiliares */
 /**************************/
 
-// char *trim(char *str, const char *characters)
-// {
-//     char *end = NULL;
-
-//     if (str == NULL)
-//         return NULL;
-
-//     // Trim leading characters
-//     while (*str != '\0')
-//     {
-//         if (strchr(characters, *str))
-//             str++;
-//         else
-//             break;
-//     }
-
-//     // If all characters are trimmed
-//     if (*str == '\0')
-//         return str;
-
-//     // Trim trailing characters
-//     end = str + strlen(str) - 1;
-//     while (end > str)
-//     {
-//         if (strchr(characters, *end))
-//             end--;
-//         else
-//             break;
-//     }
-
-//     // Null-terminate the string
-//     *(end + 1) = '\0';
-
-//     return str;
-// }
-
 void imprimir_nodo(t_punto_acceso *nodo)
 {
     if (nodo == NULL)
@@ -64,7 +28,10 @@ int	fill_list(t_punto_acceso **lista, const char *info_cell_file, int id_file)
 		return EXIT_FAILURE;
 	
 	if (access(info_cell_file, F_OK) != 0)
+    {
+        printf("No se pudo acceder al archivo: %s\n\n", info_cell_file);
 		return EXIT_FAILURE;
+    }
 	
 	file = fopen(info_cell_file, "r");
 	if (file == NULL)
@@ -84,9 +51,11 @@ int	fill_list(t_punto_acceso **lista, const char *info_cell_file, int id_file)
                 else
                 {
                     agregar_nodo_fin_lista(lista, nodo);
+                    nodo = nuevo_nodo();
                 }
             }
-            nodo = nuevo_nodo();
+            else
+                nodo = nuevo_nodo();
         }
         if (nodo != NULL)
         {
@@ -103,6 +72,7 @@ int	fill_list(t_punto_acceso **lista, const char *info_cell_file, int id_file)
         if (rtrn == EXIT_FAILURE)
         {
             vaciar_nodo(nodo);
+            free(nodo);
         }
         else
         {
@@ -122,33 +92,40 @@ int	fill_list(t_punto_acceso **lista, const char *info_cell_file, int id_file)
 
 int wificollector_quit()
 {
-    char respuesta;
+    char respuesta[MAX_VALUE_LENGTH];
     int quit = FALSE;
 
     while (1)
     {
         printf("Está seguro que desea salir del programa? [s/N]: ");
-        respuesta = getchar();
-        printf("\n");
-        if (respuesta == 's')
+        if (fgets(respuesta, sizeof(respuesta), stdin) == NULL)
         {
-            quit = TRUE;
-            break;
+            printf("\n");
+            printf("Error al leer la entrada. Intentelo de nuevo\n");
+            return quit;
         }
-        else if (respuesta == 'N')
+        if (strlen(respuesta) == 2)
         {
-            quit = FALSE;
-            break;
+            if (strncmp(respuesta, "s", 1) == 0)
+            {
+                quit = TRUE;
+                break;
+            }
+            else if (strncmp(respuesta, "N", 1) == 0)
+            {
+                quit = FALSE;
+                break;
+            }
         }
         else
-            printf("El caracter introducido no es valido.\n");
+            printf("El valor introducido no es valido.\n\n");
     }
-
+    printf("\n");
     return(quit);
 }
 
 
-void wificollector_collect(t_punto_acceso **lista)
+int wificollector_collect(t_punto_acceso **lista)
 {  
     int añadir_nodo = TRUE;
     int opcion;
@@ -166,7 +143,7 @@ void wificollector_collect(t_punto_acceso **lista)
             {
                 printf("\n");
                 printf("Error al leer la entrada. Intentelo de nuevo\n");
-                continue;
+                return EXIT_FAILURE;
             }
             printf("\n");
             opcion = atoi(entrada);
@@ -191,7 +168,7 @@ void wificollector_collect(t_punto_acceso **lista)
             {
                 printf("\n");
                 printf("Error al leer la entrada. Intentelo de nuevo\n");
-                continue;
+                return EXIT_FAILURE;
             }
 			if (strlen(entrada) == 2)
             {
@@ -212,19 +189,21 @@ void wificollector_collect(t_punto_acceso **lista)
 				printf("Error al leer la entrada. Intentelo de nuevo\n");
 		}
 	}
+
+    return EXIT_SUCCESS;
 }
 
-void wificollector_display(t_punto_acceso **lista)
+int wificollector_display(t_punto_acceso **lista)
 {
     int display = TRUE;
     char cell_opt[MAX_VALUE_LENGTH];
-    char opcion_char;
+    char again_opt[MAX_VALUE_LENGTH];
     t_punto_acceso *nodo_actual = NULL;
 
     if (lista == NULL || *lista == NULL)
     {
-        printf("HOLA\n");
-        return ;
+        printf("Error: La lista esta vacia\n\n");
+        return EXIT_SUCCESS;
     }
 
     while (display)
@@ -236,7 +215,7 @@ void wificollector_display(t_punto_acceso **lista)
             {
                 printf("\n");
                 printf("Error al leer la entrada. Intentelo de nuevo\n");
-                continue;
+                return EXIT_FAILURE;
             }
             printf("\n");
             if (atoi(cell_opt) > 0 && atoi(cell_opt) <= 21)
@@ -259,21 +238,28 @@ void wificollector_display(t_punto_acceso **lista)
 		while (TRUE)
 		{
 			printf("¿Desea añadir otro punto de acceso? [s/N]: ");
-			
-			opcion_char = getchar();
-			printf("\n");
-
-			if (opcion_char == 's')
-				break;
-			else if (opcion_char == 'N')
-			{
-				display = FALSE;
-				break;
-			}
+            if (fgets(again_opt, sizeof(again_opt), stdin) == NULL)
+            {
+                printf("\n");
+                printf("Error al leer la entrada. Intentelo de nuevo\n");
+                return EXIT_FAILURE;
+            }
+            if (strlen(again_opt) == 2)
+            {
+                if (strncmp(again_opt, "s", 1) == 0)
+                    break;
+                else if (strncmp(again_opt, "N", 1) == 0)
+                {
+                    display = FALSE;
+                    break;
+                }
+                printf("El caracter introducido no es valido\n");
+            }
 			else
-				printf("Error al leer la entrada. Intentelo de nuevo\n");
+				printf("Error, el valor introducido no es valido\n");
 		}
     }
+    return EXIT_SUCCESS;
 }
 
 void wificollector_display_all(t_punto_acceso **lista)
@@ -281,7 +267,10 @@ void wificollector_display_all(t_punto_acceso **lista)
     t_punto_acceso *nodo_actual = NULL;
 
     if (lista == NULL || *lista == NULL)
+    {
+        printf ("Error: La lista esta vacia\n\n");
         return ;
+    }
     
     nodo_actual = *lista;
     while (nodo_actual)

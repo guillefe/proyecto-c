@@ -1,6 +1,6 @@
 # Variables
 CC = gcc
-CFLAGS = -Wall -Wextra -Iinclude -MMD
+CFLAGS = -Wall -Wextra -Iinclude -MMD -fsanitize=address
 SRC_DIR = src
 OBJ_DIR = obj
 TARGET = wificollector

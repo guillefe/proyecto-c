@@ -27,11 +27,12 @@ int obtener_opcion(void)
         printf ("Opcion elegida: ");
         if (fgets(entrada, sizeof(entrada), stdin) == NULL)
         {
+            printf("\n");
             printf("Error al leer la entrada. Intentelo de nuevo\n");
-            continue;
+            return 0;
         }
         opcion = atoi(entrada);
-        if ( opcion > 0 || opcion <= 10 )
+        if ( opcion > 0 && opcion <= 10 )
             break;
         else
             printf("Error, opcion invalida\n");
@@ -51,17 +52,20 @@ void menu (){
         mostrar_menu();
         opcion_de_menu = obtener_opcion();
         switch (opcion_de_menu) {
+            case 0:
+                quit = TRUE;
+                break;
             case 1:
                 quit = wificollector_quit();
                 break;
             case 2:
-                wificollector_collect(&lista);
+                quit = wificollector_collect(&lista);
                 break;
             case 6:
                 wificollector_sort(&lista);
                 break;
             case 9:
-                wificollector_display(&lista);
+                quit = wificollector_display(&lista);
                 break;
             case 10:
                 wificollector_display_all(&lista);

@@ -6,9 +6,11 @@
 
 void mostrar_menu();
 int wificollector_quit();
-void wificollector_collect(t_punto_acceso **lista);
-void wificollector_display(t_punto_acceso **lista);
+int wificollector_collect(t_punto_acceso **lista);
+int wificollector_display(t_punto_acceso **lista);
 void wificollector_display_all(t_punto_acceso **lista);
 int wificollector_sort(t_punto_acceso **lista);
+
+char   *get_input(const char *promt, char *buffer);
 
 #endif
