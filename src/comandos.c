@@ -1,46 +1,59 @@
 #include "wificollector.h"
 
 /**************************/
-/* Funciones auxiliares
+/* Funciones auxiliares */
 /**************************/
-char *trim(char *str, const char *characters)
+
+// char *trim(char *str, const char *characters)
+// {
+//     char *end = NULL;
+
+//     if (str == NULL)
+//         return NULL;
+
+//     // Trim leading characters
+//     while (*str != '\0')
+//     {
+//         if (strchr(characters, *str))
+//             str++;
+//         else
+//             break;
+//     }
+
+//     // If all characters are trimmed
+//     if (*str == '\0')
+//         return str;
+
+//     // Trim trailing characters
+//     end = str + strlen(str) - 1;
+//     while (end > str)
+//     {
+//         if (strchr(characters, *end))
+//             end--;
+//         else
+//             break;
+//     }
+
+//     // Null-terminate the string
+//     *(end + 1) = '\0';
+
+//     return str;
+// }
+
+void imprimir_nodo(t_punto_acceso *nodo)
 {
-    char *end = NULL;
-    int i;
-
-    if (str == NULL)
-        return NULL;
-
-    // Trim leading characters
-    while (*str != '\0')
-    {
-        if (strchr(characters, *str))
-            str++;
-        else
-            break;
-    }
-
-    // If all characters are trimmed
-    if (*str == '\0')
-        return str;
-
-    // Trim trailing characters
-    end = str + strlen(str) - 1;
-    while (end > str)
-    {
-        if (strchr(characters, *end))
-            end--;
-        else
-            break;
-    }
-
-    // Null-terminate the string
-    *(end + 1) = '\0';
-
-    return str;
+    if (nodo == NULL)
+        return ;
+    printf("Cell %s\n", nodo->id_cell);
+    printf("Address: %s\n", nodo->mac_address);
+    printf("ESSID: %s\n", nodo->essid);
+    printf("Mode: %s\n", nodo->mode);
+    printf("Channel: %s\n", nodo->channel);
+    printf("Encryption_key: %s\n", nodo->encryption);
+    printf("Quality: %s\n", nodo->quality);
 }
 
-int	fill_list(t_punto_acceso **lista, const char *info_cell_file)
+int	fill_list(t_punto_acceso **lista, const char *info_cell_file, int id_file)
 {
 	FILE *file = NULL;
     t_punto_acceso *nodo = NULL;
@@ -53,7 +66,7 @@ int	fill_list(t_punto_acceso **lista, const char *info_cell_file)
 	if (access(info_cell_file, F_OK) != 0)
 		return EXIT_FAILURE;
 	
-	file = fopen(info_cell_file, "r")
+	file = fopen(info_cell_file, "r");
 	if (file == NULL)
 		return EXIT_FAILURE;
 
@@ -63,12 +76,16 @@ int	fill_list(t_punto_acceso **lista, const char *info_cell_file)
         {
             if (nodo != NULL)
             {
-                rtrn = comprobar_nodo(lista, nodo);
+                rtrn = comprobar_nodo(lista, nodo, id_file);
                 if (rtrn == EXIT_FAILURE)
+                {
                     vaciar_nodo(nodo);
+                }
+                else
+                {
+                    agregar_nodo_fin_lista(lista, nodo);
+                }
             }
-            else
-                agregar_nodo_fin_lista(lista, nodo);
             nodo = nuevo_nodo();
         }
         if (nodo != NULL)
@@ -77,8 +94,23 @@ int	fill_list(t_punto_acceso **lista, const char *info_cell_file)
             if (rtrn == EXIT_FAILURE)
                 vaciar_nodo(nodo);
         }
-
     }
+
+    // Procesar el último nodo después de salir del bucle
+    if (nodo != NULL)
+    {
+        rtrn = comprobar_nodo(lista, nodo, id_file);
+        if (rtrn == EXIT_FAILURE)
+        {
+            vaciar_nodo(nodo);
+        }
+        else
+        {
+            agregar_nodo_fin_lista(lista, nodo);
+        }
+    }
+
+    fclose(file);
     
     if (*lista == NULL)
         return EXIT_FAILURE;
@@ -95,9 +127,9 @@ int wificollector_quit()
 
     while (1)
     {
-        printf("Está seguro que desea salir del programa? [s/N]:\n");
+        printf("Está seguro que desea salir del programa? [s/N]: ");
         respuesta = getchar();
-
+        printf("\n");
         if (respuesta == 's')
         {
             quit = TRUE;
@@ -119,14 +151,10 @@ int wificollector_quit()
 void wificollector_collect(t_punto_acceso **lista)
 {  
     int añadir_nodo = TRUE;
-    int rtrn;
     int opcion;
-	char opcion_char;
+    int rtrn;
     char entrada[MAX_VALUE_LENGTH];
     char archivo_info_cell[MAX_VALUE_LENGTH];
-	t_punto_acceso *nodo_actual;
-
-	nodo_actual = *lista;
 
     while (añadir_nodo)
     {
@@ -152,9 +180,82 @@ void wificollector_collect(t_punto_acceso **lista)
         snprintf(archivo_info_cell, MAX_VALUE_LENGTH, "info_cell_%d.txt", opcion);
 
 		// Se rellena la lista con la informacion del archivo
-		rtrn = fill_list(lista, archivo_info_cell);
+		rtrn = fill_list(lista, archivo_info_cell, opcion);
+        (void)rtrn;
 
 		// Pregunta si se quiere cargar otro punto de acceso
+		while (TRUE)
+		{
+			printf("¿Desea añadir otro punto de acceso? [s/N]: ");
+			if (fgets(entrada, sizeof(entrada), stdin) == NULL)
+            {
+                printf("\n");
+                printf("Error al leer la entrada. Intentelo de nuevo\n");
+                continue;
+            }
+			if (strlen(entrada) == 2)
+            {
+                if (strncmp(entrada, "s", 1) == 0)
+                {
+                    añadir_nodo = TRUE;
+                    break;
+                }
+                else if (strncmp(entrada, "N", 1) == 0)
+                {
+                    añadir_nodo = FALSE;
+                    break;
+                }
+                else
+                    printf("Valor incorrecto\n");
+            }
+			else
+				printf("Error al leer la entrada. Intentelo de nuevo\n");
+		}
+	}
+}
+
+void wificollector_display(t_punto_acceso **lista)
+{
+    int display = TRUE;
+    char cell_opt[MAX_VALUE_LENGTH];
+    char opcion_char;
+    t_punto_acceso *nodo_actual = NULL;
+
+    if (lista == NULL || *lista == NULL)
+    {
+        printf("HOLA\n");
+        return ;
+    }
+
+    while (display)
+    {
+        while (TRUE)
+        {
+            printf("Indique el número de la celda de la que desea conocer su información (1 - 21): ");
+            if (fgets(cell_opt, sizeof(cell_opt), stdin) == NULL)
+            {
+                printf("\n");
+                printf("Error al leer la entrada. Intentelo de nuevo\n");
+                continue;
+            }
+            printf("\n");
+            if (atoi(cell_opt) > 0 && atoi(cell_opt) <= 21)
+                break;
+            else
+                printf("Error: Valor introducido invalido\n");
+        }
+
+        nodo_actual = *lista;
+        while (nodo_actual)
+        {
+            if (strncmp(nodo_actual->id_cell, cell_opt, strlen(nodo_actual->id_cell)) == 0)
+            {
+                imprimir_nodo(nodo_actual);
+                printf("\n");
+            }
+            nodo_actual = nodo_actual->next;
+        }
+        
 		while (TRUE)
 		{
 			printf("¿Desea añadir otro punto de acceso? [s/N]: ");
@@ -166,35 +267,88 @@ void wificollector_collect(t_punto_acceso **lista)
 				break;
 			else if (opcion_char == 'N')
 			{
-				añadir_nodo = FALSE;
+				display = FALSE;
 				break;
 			}
 			else
 				printf("Error al leer la entrada. Intentelo de nuevo\n");
 		}
-	}
-}
-
-void wificollector_display(t_punto_acceso **lista)
-{
-
+    }
 }
 
 void wificollector_display_all(t_punto_acceso **lista)
 {
+    t_punto_acceso *nodo_actual = NULL;
 
+    if (lista == NULL || *lista == NULL)
+        return ;
+    
+    nodo_actual = *lista;
+    while (nodo_actual)
+    {
+        imprimir_nodo(nodo_actual);
+        printf("\n");
+        nodo_actual = nodo_actual->next;
+    }
 }
 
 
 // Método para ordenar las celdas por calidad en orden decreciente
 int wificollector_sort(t_punto_acceso **lista)
 {
-    int cuenta_nodos = 0;
-    char *mac_list = NULL;
+    int index = 1;
+    t_punto_acceso *nodo_max_quality = NULL;
+    t_punto_acceso *nodo_actual = NULL;
 
     if (lista == NULL || *lista == NULL)
-        return ;
-    
-    cuenta_nodos = numero_nodos(lista);
-    mac_list = calloc(cuenta_nodos, 17 * sizeof(char *))
+        return EXIT_FAILURE;
+
+    int cuenta_nodos = numero_nodos(lista);
+    if (cuenta_nodos <= 0)
+        return EXIT_FAILURE;
+
+
+    while (index <= cuenta_nodos)
+    {
+        nodo_actual = *lista;
+        nodo_max_quality = NULL;
+
+        while (nodo_actual) {
+            if (nodo_actual->index == 0) 
+            {
+                if (nodo_max_quality == NULL || atoi(nodo_actual->quality) > atoi(nodo_max_quality->quality))
+                    nodo_max_quality = nodo_actual;
+            }
+            nodo_actual = nodo_actual->next;
+        }
+
+        if (nodo_max_quality) {
+            nodo_max_quality->index = index;
+            index++;
+        }
+    }
+
+    index = 1;
+    nodo_actual = *lista;
+    while (nodo_actual)
+    {
+        if (index == nodo_actual->index)
+        {
+            imprimir_nodo(nodo_actual);
+            printf("\n");
+            nodo_actual = nodo_head(nodo_actual);
+            index++;
+        }
+        else
+            nodo_actual = nodo_actual->next;
+    }
+
+    nodo_actual = *lista;
+    while (nodo_actual)
+    {
+        nodo_actual->index = 0;
+        nodo_actual = nodo_actual->next;
+    }
+
+    return EXIT_SUCCESS;
 }

@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "celdas.h"
-#include "comandos.h"
+#include "wificollector.h"
 
 void mostrar_menu(){
     printf("[2024] SUCEM S.L Recolector de redes inalambricas\n\n");
@@ -56,25 +55,28 @@ void menu (){
                 quit = wificollector_quit();
                 break;
             case 2:
-                wificollector_collect();
+                wificollector_collect(&lista);
                 break;
             case 6:
-                wificollector_sort();
+                wificollector_sort(&lista);
                 break;
             case 9:
-                wificollector_display();
+                wificollector_display(&lista);
                 break;
             case 10:
-                wificollector_display_all();
+                wificollector_display_all(&lista);
                 break;
             default:
                 printf("Este metodo todavia no esta implementado.\n");
             printf("Seleccione una opcion entre: [1],[2],[9],[10]\n");
         }
     }
+    liberar_lista(&lista);
 }
 
 int main(int argc, char* argv[]){
+    (void)argc;
+    (void)argv;
     menu();
     return 0;
 }

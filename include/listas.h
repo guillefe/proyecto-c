@@ -10,9 +10,10 @@
 #define QUALITY_STRING "Quality"
 #define FREQUENCY_STRING "Frequency"
 #define SIGNAL_STRING "Signal level"
-#define MAX_VALUE_LENGTH 20
+#define MAX_VALUE_LENGTH 50
 
 typedef struct s_punto_acceso {
+    int                     index;
     char 					id_cell[MAX_VALUE_LENGTH];
     char 					mac_address[MAX_VALUE_LENGTH];
     char 					essid[MAX_VALUE_LENGTH];
@@ -34,4 +35,6 @@ int rellenar_nodo(t_punto_acceso *nodo, const char *linea);
 void	vaciar_nodo(t_punto_acceso *nodo);
 int comprobar_nodo(t_punto_acceso **lista, t_punto_acceso *nodo, int cell_file);
 int	numero_nodos(t_punto_acceso **lista);
+t_punto_acceso *nodo_head(t_punto_acceso *nodo);
+t_punto_acceso *nodo_tail(t_punto_acceso *nodo);
 #endif

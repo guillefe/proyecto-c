@@ -1,4 +1,4 @@
-#include "celdas.h"
+#include "wificollector.h"
 
 /**
  * Crea un nuevo nodo de tipo t_punto_acceso.
@@ -96,64 +96,100 @@ void liberar_un_nodo(t_punto_acceso **nodo_cabeza, t_punto_acceso *nodo_eliminar
 	free(nodo_eliminar);
 }
 
+char *trim(char *str, const char *characters)
+{
+    if (str == NULL || characters == NULL)
+        return str;
+
+    char *start = str;
+    char *end = str + strlen(str) - 1;
+
+    while (*start && strchr(characters, *start))
+        start++;
+
+    while (end >= start && strchr(characters, *end))
+        *end-- = '\0';
+
+    return start;
+}
+
 int rellenar_nodo(t_punto_acceso *nodo, const char *linea)
 {
 	char *temporal = NULL;
-	int	clave_longitud = 0;
 	int rtrn = EXIT_SUCCESS;
+	char linea_copia[MAX_VALUE_LENGTH];
 
 	if (nodo == NULL || linea == NULL)
 		return (EXIT_FAILURE);
 
-	temporal = linea;
+	snprintf(linea_copia, MAX_VALUE_LENGTH, "%s", linea);
 	
 	if (strncmp(linea, CELL_STRING, strlen(CELL_STRING)) == 0)
 	{
 		// Linea Cell N
-		snprintf(nodo->id_cell, MAX_VALUE_LENGTH, "%s", temporal + strlen(CELL_STRING) - 1);
+		temporal = linea_copia + strlen(CELL_STRING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->id_cell, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 	else if (strncmp (linea, ADDRESS_STRING, strlen(ADDRESS_STRING)) == 0)
 	{
 		// Linea Address
-		snprintf(nodo->mac_address, MAX_VALUE_LENGTH, "%s", temporal + strlen(ADDRESS_STRING) - 1);
+		temporal = linea_copia + strlen(ADDRESS_STRING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->mac_address, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 	else if (strncmp (linea, ESSID_STRING, strlen(ESSID_STRING)) == 0)
 	{
 		// Linea ESSID
-		snprintf(nodo->essid, MAX_VALUE_LENGTH, "%s", temporal + strlen(ESSID_STRING) - 1);
+		temporal = linea_copia + strlen(ESSID_STRING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->essid, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 		else if (strncmp (linea, MODE_STRING, strlen(MODE_STRING)) == 0)
 	{
 		// Linea Mode
-		snprintf(nodo->mode, MAX_VALUE_LENGTH, "%s", temporal + strlen(MODE_STRING) - 1);
+		temporal = linea_copia + strlen(MODE_STRING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->mode, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 		else if (strncmp (linea, CHANNEL_SRTING, strlen(CHANNEL_SRTING)) == 0)
 	{
 		// Linea Channel
-		snprintf(nodo->channel, MAX_VALUE_LENGTH, "%s", temporal + strlen(CHANNEL_SRTING) - 1);
+		temporal = linea_copia + strlen(CHANNEL_SRTING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->channel, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 		else if (strncmp (linea, ENCRYPTION_STRING, strlen(ENCRYPTION_STRING)) == 0)
 	{
 		// Linea Encryption
-		snprintf(nodo->encryption, MAX_VALUE_LENGTH, "%s", temporal + strlen(ENCRYPTION_STRING) - 1);
+		temporal = linea_copia + strlen(ENCRYPTION_STRING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->encryption, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 		else if (strncmp (linea, QUALITY_STRING, strlen(QUALITY_STRING)) == 0)
 	{
 		// Linea Quality
-		snprintf(nodo->quality, MAX_VALUE_LENGTH, "%s", temporal + strlen(QUALITY_STRING) - 1);
+		temporal = linea_copia + strlen(QUALITY_STRING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->quality, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 		else if (strncmp (linea, FREQUENCY_STRING, strlen(FREQUENCY_STRING)) == 0)
 	{
 		// Linea Frequency
-		snprintf(nodo->frequency, MAX_VALUE_LENGTH, "%s", temporal + strlen(FREQUENCY_STRING) - 1);
+		temporal = linea_copia + strlen(FREQUENCY_STRING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->frequency, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 		else if (strncmp (linea, SIGNAL_STRING, strlen(SIGNAL_STRING)) == 0)
 	{
 		// Linea Signal
-		snprintf(nodo->signal_level, MAX_VALUE_LENGTH, "%s", temporal + strlen(SIGNAL_STRING) - 1);
+		temporal = linea_copia + strlen(SIGNAL_STRING);
+		temporal = trim(temporal, " \"=:\n");
+		snprintf(nodo->signal_level, MAX_VALUE_LENGTH, "%s", temporal);
 	}
 	else
 		rtrn = EXIT_FAILURE;
+
 	return rtrn;
 }
 
@@ -210,4 +246,27 @@ int	numero_nodos(t_punto_acceso **lista)
 	}
 
 	return nodos;
+}
+
+t_punto_acceso *nodo_head(t_punto_acceso *nodo)
+{
+	if (nodo == NULL)
+		return NULL;
+	
+	while (nodo->prev)
+		nodo = nodo->prev;
+	
+	return nodo;
+}
+
+
+t_punto_acceso *nodo_tail(t_punto_acceso *nodo)
+{
+	if (nodo == NULL)
+		return NULL;
+	
+	while (nodo->next)
+		nodo = nodo->next;
+	
+	return nodo;
 }

@@ -7,20 +7,10 @@
 #include <ctype.h>
 #include <unistd.h>
 
-#include "listas.h"
-#include "comandos.h"
 
 #define TRUE 1
 #define FALSE 0
 
-int opcion_de_menu;
-struct celdas; 
-struct quality;
-char *abrir_archivo_texto;
-
-void asignar_en_celda(int id_cell_aux, char address_aux[], char essid_aux[], char mode_aux[], int channel_aux, char encryption_key_aux[], char quality_aux[], float frecuency_aux, int signal_level_aux){
-
-int contador_celdas = 0;
 /**
  * @brief Verifica si la celda especificada coincide con el archivo de celda.
  *
