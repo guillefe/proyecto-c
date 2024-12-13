@@ -83,6 +83,6 @@ Para instalar y compilar la aplicación:
 2. **Instalación**:
 
    ```bash
-   git clone https://github.com/usuario/recolector-redes.git
-   cd recolector-redes
+   git clone https://github.com/guillefe/proyecto-c.git
+   cd proyecto-c
    make
